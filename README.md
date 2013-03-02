@@ -2,7 +2,8 @@ Starting code for the Robot Arm GUI.<br>
 <br>
 You should modify this GUIDE GUI by opening the .fig file in GUIDE.<br>
 Or you can just type<br>
-> guide DhArm<br>
+<br>
+<span style="margin-left: 40px;"><b>> guide DhArm</b></span><br>
 <br>
 and that'll open GUIDE for this GUI.<br>
 <br>

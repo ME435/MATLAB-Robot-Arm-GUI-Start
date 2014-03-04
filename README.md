@@ -1,14 +1,14 @@
-Starting code for the Robot Arm GUI.<br>
+Reference code for the Robot Arm GUI.<br>
 <br>
-You should modify this GUIDE GUI by opening the .fig file in GUIDE.<br>
+You can look at this GUIDE GUI by opening the .fig file in GUIDE.<br>
 Or you can just type<br>
 <br>
 <b>> guide DhArm</b><br>
 <br>
 and that'll open GUIDE for this GUI.<br>
 <br>
-Your task is to add serial communication to this GUI. You need to make sure 
-to use the com port box and open a serial connection.  Then move the joints 
+Your task is to get your in-class GUI up to this level then add serial communication.
+You need to make sure to use the com port box and open a serial connection.  Then move the joints 
 and gripper as they move.  Really that's just three things you need to add.<br>
 <ul>
 <li>Open a serial connection to the robot.</li>

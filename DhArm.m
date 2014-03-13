@@ -273,7 +273,7 @@ if ~isempty(open_ports)
 end
 
 % TODO: Open a serial connection to the robot arm
-fprintf('TODO: Open a serial connection to the robot arm if open.\n');
+fprintf('TODO: Open a serial connection to the robot arm.\n');
 
 % Remember anytime you modify the handles structure update it!
 % Anything you add should go into the handles.user area, for example
@@ -287,6 +287,7 @@ function pushbutton_close_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+fprintf('DONE: Closed serial connect.\n');
 
 % This one is done for you.  It's easy.
 open_ports = instrfind('Type','serial','Status','open');
@@ -407,26 +408,31 @@ function axes_arm_CreateFcn(hObject, eventdata, handles)
 
 function updateArm(hObject, handles)
 
-% Making sure the joint angles are integers (should already be ints).
-handles.user.jointAngles(1) = round(handles.user.jointAngles(1));
-handles.user.jointAngles(2) = round(handles.user.jointAngles(2));
-handles.user.jointAngles(3) = round(handles.user.jointAngles(3));
-handles.user.jointAngles(4) = round(handles.user.jointAngles(4));
-handles.user.jointAngles(5) = round(handles.user.jointAngles(5));
 
-% TODO: Send a position command to the serial robot if open.
-fprintf('TODO: Send a position command to the serial robot if open.\n');
+% DONE: Create the five homogeneous transformation matrices.
+[A1,A2,A3,A4,A5] = makeHomogeneousTransformations(...
+    handles.user.jointAngles(1),...
+    handles.user.jointAngles(2),...
+    handles.user.jointAngles(3),...
+    handles.user.jointAngles(4),...
+    handles.user.jointAngles(5));
 
-[T1, T2, T3, T4, T5] = makeTransforms(handles.user.jointAngles(1), handles.user.jointAngles(2), handles.user.jointAngles(3), handles.user.jointAngles(4), handles.user.jointAngles(5));
+% DONE: Use the A matricies to form the T0_n matricies.
+T0_1 = A1;
+T0_2 = A1 * A2;
+T0_3 = A1 * A2 * A3;
+T0_4 = A1 * A2 * A3 * A4;
+T0_5 = A1 * A2 * A3 * A4 * A5;
 
-% Use the matrix to transform the patch vertices
-link1verticesWRTground = T1 * handles.user.link1Vertices;
-link2verticesWRTground = T1 * T2 * handles.user.link2Vertices;
-link3verticesWRTground = T1 * T2 * T3 * handles.user.link3Vertices;
-link4verticesWRTground = T1 * T2 * T3 * T4 * handles.user.link4Vertices;
-link5verticesWRTground = T1 * T2 * T3 * T4 * T5 * handles.user.link5Vertices;
+% DONE: Use the T matricies to transform the patch vertices
+link1verticesWRTground = T0_1 * handles.user.link1Vertices;
+link2verticesWRTground = T0_2 * handles.user.link2Vertices;
+link3verticesWRTground = T0_3 * handles.user.link3Vertices;
+link4verticesWRTground = T0_4 * handles.user.link4Vertices;
+link5verticesWRTground = T0_5 * handles.user.link5Vertices;
 
-% Update the patches with the new vertices
+
+% DONE: Update the patches with the new vertices.
 set(handles.user.link1Patch,'Vertices', link1verticesWRTground(1:3,:)');
 set(handles.user.link2Patch,'Vertices', link2verticesWRTground(1:3,:)');
 set(handles.user.link3Patch,'Vertices', link3verticesWRTground(1:3,:)');
@@ -435,10 +441,20 @@ set(handles.user.link5Patch,'Vertices', link5verticesWRTground(1:3,:)');
 
 % Update x, y, and z using the gripper (end effector) origin.
 dhOrigin = [0 0 0 1]';
-eeWRTground = T1 * T2 * T3 * T4 * T5 * dhOrigin;
+eeWRTground = T0_5 * dhOrigin;
 set(handles.text_x, 'String', sprintf('%.3f"', eeWRTground(1)));
 set(handles.text_y, 'String', sprintf('%.3f"', eeWRTground(2)));
 set(handles.text_z, 'String', sprintf('%.3f"', eeWRTground(3)));
+
+% Making sure the joint angles are integers before sending to robot (should already be ints).
+handles.user.jointAngles(1) = round(handles.user.jointAngles(1));
+handles.user.jointAngles(2) = round(handles.user.jointAngles(2));
+handles.user.jointAngles(3) = round(handles.user.jointAngles(3));
+handles.user.jointAngles(4) = round(handles.user.jointAngles(4));
+handles.user.jointAngles(5) = round(handles.user.jointAngles(5));
+
+% TODO: Send a position command to the serial robot if open.
+fprintf('TODO: Send a position command to the serial robot if open.\n');
 
 guidata(hObject, handles);
 

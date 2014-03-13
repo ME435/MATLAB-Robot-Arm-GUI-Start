@@ -1,5 +1,5 @@
-function T = makeDHTransform(degreesAlpha, a, d, degreesTheta)
-% Implement the DH matrix
+function T = homogeneousTransformation(a, d, degreesAlpha, degreesTheta)
+% Implements the DH matrix
 alpha = degreesAlpha/180*pi;
 theta = degreesTheta/180*pi;
 T = zeros(4,4);
